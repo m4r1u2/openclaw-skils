@@ -14,12 +14,10 @@ Environment variables:
 
 import argparse
 import base64
-import json
 import os
 import sys
 import time
 from pathlib import Path
-from urllib.parse import urljoin
 
 try:
     import jwt
@@ -34,6 +32,7 @@ except ImportError:
     sys.exit(1)
 
 BASE_URL = "https://api-singapore.klingai.com"
+REQUEST_TIMEOUT = 30  # seconds
 
 # ── Authentication ──────────────────────────────────────────────────
 
@@ -88,7 +87,7 @@ def create_text2video(args):
         body["camera_control"] = {"type": args.camera}
 
     url = f"{BASE_URL}/v1/videos/text2video"
-    print(f"Creating text-to-video task...")
+    print("Creating text-to-video task...")
     print(f"  Model: {args.model}")
     print(f"  Mode: {args.mode}")
     print(f"  Duration: {args.duration}s")
@@ -96,7 +95,7 @@ def create_text2video(args):
     print(f"  Prompt: {args.prompt[:100]}...")
     print()
 
-    resp = requests.post(url, headers=api_headers(), json=body)
+    resp = requests.post(url, headers=api_headers(), json=body, timeout=REQUEST_TIMEOUT)
     resp.raise_for_status()
     data = resp.json()
 
@@ -143,8 +142,8 @@ def create_image2video(args):
         body["cfg_scale"] = args.cfg_scale
 
     url = f"{BASE_URL}/v1/videos/image2video"
-    print(f"Creating image-to-video task...")
-    resp = requests.post(url, headers=api_headers(), json=body)
+    print("Creating image-to-video task...")
+    resp = requests.post(url, headers=api_headers(), json=body, timeout=REQUEST_TIMEOUT)
     resp.raise_for_status()
     data = resp.json()
 
@@ -169,7 +168,7 @@ def create_extend(args):
 
     url = f"{BASE_URL}/v1/videos/video-extend"
     print(f"Creating video extension task from {args.task_id}...")
-    resp = requests.post(url, headers=api_headers(), json=body)
+    resp = requests.post(url, headers=api_headers(), json=body, timeout=REQUEST_TIMEOUT)
     resp.raise_for_status()
     data = resp.json()
 
@@ -191,7 +190,7 @@ def poll_task(task_id, endpoint_type, timeout=900, interval=5):
     last_status = None
 
     while time.time() - start < timeout:
-        resp = requests.get(url, headers=api_headers())
+        resp = requests.get(url, headers=api_headers(), timeout=REQUEST_TIMEOUT)
         resp.raise_for_status()
         data = resp.json()
 
@@ -222,7 +221,7 @@ def poll_task(task_id, endpoint_type, timeout=900, interval=5):
 def download_video(video_url, output_path):
     """Download a video from URL to local file."""
     print(f"Downloading video to {output_path}...")
-    resp = requests.get(video_url, stream=True)
+    resp = requests.get(video_url, stream=True, timeout=REQUEST_TIMEOUT)
     resp.raise_for_status()
 
     Path(output_path).parent.mkdir(parents=True, exist_ok=True)

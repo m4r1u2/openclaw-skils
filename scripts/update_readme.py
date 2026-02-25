@@ -176,7 +176,7 @@ def main() -> int:
         # Show a simple diff summary
         old_lines = readme_text.splitlines()
         new_lines = updated.splitlines()
-        for i, (old, new) in enumerate(zip(old_lines, new_lines), 1):
+        for i, (old, new) in enumerate(zip(old_lines, new_lines, strict=False), 1):
             if old != new:
                 print(f"  L{i}: - {old}")
                 print(f"  L{i}: + {new}")

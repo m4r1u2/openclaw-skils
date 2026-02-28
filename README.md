@@ -12,12 +12,13 @@ Each skill is a self-contained package that gives an OpenClaw agent a new capabi
 ## Available Skills
 
 <!-- SKILLS_COUNT_START -->
-**1 skill** available
+**2 skills** available
 <!-- SKILLS_COUNT_END -->
 
 <!-- SKILLS_TABLE_START -->
 | Skill | Description | Env Vars |
 |-------|-------------|----------|
+| [🎨 fal](skills/fal/) | Generate images and videos using fal.ai models (text-to-image, image-to-video) | `FAL_KEY` |
 | [🎬 kling-video](skills/kling-video/) | Generate AI videos using the Kling AI API (klingai.com) | `KLING_ACCESS_KEY`, `KLING_SECRET_KEY` |
 <!-- SKILLS_TABLE_END -->
 

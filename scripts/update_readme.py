@@ -111,8 +111,8 @@ def generate_skills_table(skills: list[dict]) -> str:
     ]
 
     for s in sorted(skills, key=lambda x: x["name"]):
-        emoji = f'{s["emoji"]} ' if s["emoji"] else ""
-        name_link = f'[{emoji}{s["name"]}](skills/{s["dir_name"]}/)'
+        emoji = f"{s['emoji']} " if s["emoji"] else ""
+        name_link = f"[{emoji}{s['name']}](skills/{s['dir_name']}/)"
         env = ", ".join(f"`{v}`" for v in s["env_vars"]) if s["env_vars"] else "—"
         lines.append(f"| {name_link} | {s['description']} | {env} |")
 

@@ -36,6 +36,7 @@ REQUEST_TIMEOUT = 30  # seconds
 
 # ── Authentication ──────────────────────────────────────────────────
 
+
 def get_jwt_token():
     """Generate a JWT token from KLING_ACCESS_KEY and KLING_SECRET_KEY."""
     access_key = os.environ.get("KLING_ACCESS_KEY")
@@ -63,6 +64,7 @@ def api_headers():
 
 
 # ── API Calls ───────────────────────────────────────────────────────
+
 
 def create_text2video(args):
     """Create a text-to-video generation task."""
@@ -183,6 +185,7 @@ def create_extend(args):
 
 # ── Polling & Download ──────────────────────────────────────────────
 
+
 def poll_task(task_id, endpoint_type, timeout=900, interval=5):
     """Poll task status until complete or timeout."""
     url = f"{BASE_URL}/v1/videos/{endpoint_type}/{task_id}"
@@ -238,6 +241,7 @@ def download_video(video_url, output_path):
 
 # ── CLI ─────────────────────────────────────────────────────────────
 
+
 def main():
     parser = argparse.ArgumentParser(
         description="Kling AI Video Generation CLI",
@@ -262,54 +266,41 @@ Examples:
 
     # -- Shared arguments
     def add_common_args(p):
-        p.add_argument("--model", default="kling-v2-master",
-                        help="Model name (default: kling-v2-master)")
-        p.add_argument("--mode", default="pro", choices=["std", "pro"],
-                        help="Generation mode (default: pro)")
-        p.add_argument("--duration", default="10", choices=["5", "10"],
-                        help="Video duration in seconds (default: 10)")
-        p.add_argument("--aspect-ratio", default="16:9",
-                        choices=["16:9", "9:16", "1:1"],
-                        help="Aspect ratio (default: 16:9)")
-        p.add_argument("--output", "-o", default="output.mp4",
-                        help="Output file path (default: output.mp4)")
-        p.add_argument("--negative-prompt", default=None,
-                        help="Negative prompt")
-        p.add_argument("--sound", default="off", choices=["on", "off"],
-                        help="Enable AI sound (kling-v2-6 only)")
-        p.add_argument("--cfg-scale", type=float, default=None,
-                        help="Prompt adherence 0-1 (v1.x models only)")
-        p.add_argument("--timeout", type=int, default=900,
-                        help="Max seconds to wait (default: 900)")
-        p.add_argument("--poll-interval", type=int, default=5,
-                        help="Seconds between status checks (default: 5)")
-        p.add_argument("--no-download", action="store_true",
-                        help="Don't download, just print the URL")
+        p.add_argument("--model", default="kling-v2-master", help="Model name (default: kling-v2-master)")
+        p.add_argument("--mode", default="pro", choices=["std", "pro"], help="Generation mode (default: pro)")
+        p.add_argument("--duration", default="10", choices=["5", "10"], help="Video duration in seconds (default: 10)")
+        p.add_argument(
+            "--aspect-ratio", default="16:9", choices=["16:9", "9:16", "1:1"], help="Aspect ratio (default: 16:9)"
+        )
+        p.add_argument("--output", "-o", default="output.mp4", help="Output file path (default: output.mp4)")
+        p.add_argument("--negative-prompt", default=None, help="Negative prompt")
+        p.add_argument("--sound", default="off", choices=["on", "off"], help="Enable AI sound (kling-v2-6 only)")
+        p.add_argument("--cfg-scale", type=float, default=None, help="Prompt adherence 0-1 (v1.x models only)")
+        p.add_argument("--timeout", type=int, default=900, help="Max seconds to wait (default: 900)")
+        p.add_argument("--poll-interval", type=int, default=5, help="Seconds between status checks (default: 5)")
+        p.add_argument("--no-download", action="store_true", help="Don't download, just print the URL")
 
     # -- text2video
-    t2v = subparsers.add_parser("text2video", aliases=["t2v"],
-                                 help="Generate video from text prompt")
+    t2v = subparsers.add_parser("text2video", aliases=["t2v"], help="Generate video from text prompt")
     t2v.add_argument("--prompt", "-p", required=True, help="Text prompt")
-    t2v.add_argument("--camera", default=None,
-                      choices=["simple", "down_back", "forward_up",
-                               "right_turn_forward", "left_turn_forward"],
-                      help="Camera movement preset")
+    t2v.add_argument(
+        "--camera",
+        default=None,
+        choices=["simple", "down_back", "forward_up", "right_turn_forward", "left_turn_forward"],
+        help="Camera movement preset",
+    )
     add_common_args(t2v)
 
     # -- image2video
-    i2v = subparsers.add_parser("image2video", aliases=["i2v"],
-                                 help="Generate video from image")
-    i2v.add_argument("--image", "-i", required=True,
-                      help="Image file path, URL, or base64")
-    i2v.add_argument("--image-tail", default=None,
-                      help="End frame image (pro mode, v1.5+ only)")
+    i2v = subparsers.add_parser("image2video", aliases=["i2v"], help="Generate video from image")
+    i2v.add_argument("--image", "-i", required=True, help="Image file path, URL, or base64")
+    i2v.add_argument("--image-tail", default=None, help="End frame image (pro mode, v1.5+ only)")
     i2v.add_argument("--prompt", "-p", default=None, help="Text prompt")
     i2v.add_argument("--camera", default=None)
     add_common_args(i2v)
 
     # -- extend
-    ext = subparsers.add_parser("extend", aliases=["ext"],
-                                 help="Extend an existing video")
+    ext = subparsers.add_parser("extend", aliases=["ext"], help="Extend an existing video")
     ext.add_argument("--task-id", required=True, help="Task ID to extend")
     ext.add_argument("--prompt", "-p", default=None, help="Continuation prompt")
     add_common_args(ext)
@@ -317,9 +308,9 @@ Examples:
     # -- status
     st = subparsers.add_parser("status", help="Check task status")
     st.add_argument("--task-id", required=True, help="Task ID to check")
-    st.add_argument("--type", required=True,
-                     choices=["text2video", "image2video", "video-extend"],
-                     help="Endpoint type")
+    st.add_argument(
+        "--type", required=True, choices=["text2video", "image2video", "video-extend"], help="Endpoint type"
+    )
     st.add_argument("--output", "-o", default="output.mp4")
     st.add_argument("--timeout", type=int, default=900)
     st.add_argument("--poll-interval", type=int, default=5)
